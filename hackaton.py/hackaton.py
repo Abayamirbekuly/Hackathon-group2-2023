@@ -57,12 +57,15 @@ pygame.mixer.music.load("./assets/game.mp3")
 pygame.mixer.music.set_volume(0.5)  
 pygame.mixer.music.play(-1)
 collision_sound = pygame.mixer.Sound("./assets/money.mp3")
+collision_car_sound = pygame.mixer.Sound('./assets/collision.mp3')
 def freeze_player(player):
     if player == 1:
         global freeze_start_time_player1
+        collision_car_sound.play()
         freeze_start_time_player1 = time.time()
     elif player == 2:
         global freeze_start_time_player2
+        collision_car_sound.play()
         freeze_start_time_player2 = time.time()
 
 
@@ -132,11 +135,13 @@ while running:
     # Проверка столкновения с первой машиной для второго игрока
     if not is_frozen_player2 and is_collision(player_rect2, first_car_rect):
         freeze_player(2)
+        collision_car_sound.play()
         second_player_image_normal = pygame.image.load("./assets/Желтый игрок.png")
 
     # Проверка столкновения с второй машиной для второго игрока
     if not is_frozen_player2 and is_collision(player_rect2, second_car_rect):
         freeze_player(2)
+        collision_car_sound.play()
         second_player_image_normal = pygame.image.load("./assets/Желтый игрок.png")
 
     if not is_frozen_player1  and is_collision(player_rect1, table_rect):
