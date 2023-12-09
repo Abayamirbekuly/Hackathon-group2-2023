@@ -9,7 +9,7 @@ mixer.init()
 
 width, height = 1440, 800
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Bank Robbery Plot")
+pygame.display.set_caption("Bank Robbery")
 
 background = pygame.image.load("./assets/Desktop - 1.png")
 background = pygame.transform.scale(background, (1440, 800))
@@ -38,11 +38,11 @@ cwm2_x, cwm2_y = 0, 400
 blue_score = 0
 yellow_score = 0
 first_car_speed, second_car_speed = 10, 10
-freeze_duration = 3
+freeze_duration = 2
 freeze_start_time_player1 = 0
 freeze_start_time_player2 = 0
 
-font = pygame.font.Font(None, 36)  # Задаем шрифт и размер текста
+font = pygame.font.Font(None, 25)  # Задаем шрифт и размер текста
 
 clock = pygame.time.Clock()
 facing_horizontal1 = False
@@ -53,9 +53,10 @@ random_sec_car_image = random.choice([second_car_image, yellow_car_image])
 start_time = time.time()
 game_duration = 60
 
-pygame.mixer.music.load("./assets/soundtrack.mp3")
+pygame.mixer.music.load("./assets/game.mp3")
 pygame.mixer.music.set_volume(0.5)  
 pygame.mixer.music.play(-1)
+collision_sound = pygame.mixer.Sound("./assets/money.mp3")
 def freeze_player(player):
     if player == 1:
         global freeze_start_time_player1
@@ -114,8 +115,8 @@ while running:
     first_car_rect = pygame.Rect(first_car_x, first_car_y, 200, car_image.get_height() - 400)
     second_car_rect = pygame.Rect(second_car_x, second_car_y, 200, second_car_image.get_height() - 400)
     table_rect = pygame.Rect(table_x, table_y, table_with_money.get_width() - 300, table_with_money.get_height())
-    Car_w_money_rect = pygame.Rect(Cwm_x, cwm_y, Car_with_money.get_width(), Car_with_money.get_height())
-    Sec_car_w_money_rect = pygame.Rect(cwm2_x, cwm2_y, Second_car_with_money.get_width(),
+    Car_w_money_rect = pygame.Rect(Cwm_x, cwm_y, Car_with_money.get_width()-100, Car_with_money.get_height())
+    Sec_car_w_money_rect = pygame.Rect(cwm2_x, cwm2_y, Second_car_with_money.get_width()-100,
                                        Second_car_with_money.get_height())
 
     # Проверка столкновения с первой машиной
@@ -147,15 +148,15 @@ while running:
         
         
     if not is_frozen_player1  and is_collision(player_rect1, Car_w_money_rect) and player_image_normal == player_with_money:
+        collision_sound.play()
         player_image_normal = pygame.image.load("./assets/синой игрок.png")
         blue_score += 100
     
     if not is_frozen_player1  and is_collision(player_rect2, Sec_car_w_money_rect) and second_player_image_normal == second_player_with_money:
+        collision_sound.play()
         second_player_image_normal = pygame.image.load("./assets/Желтый игрок.png")
         yellow_score += 100
         
-    timer_text = font.render(f"Time: {int(remaining_time)} seconds", True, (255, 255, 255))
-    screen.blit(timer_text, (width - 200, 10))
     screen.blit(background, (0, 0))
     screen.blit(table_with_money, (table_x, table_y))
     screen.blit(Car_with_money, (Cwm_x, cwm_y))
@@ -165,13 +166,15 @@ while running:
         pygame.mixer.music.stop()
         # Время вышло, определение победителя
         if blue_score > yellow_score:
-            winner_text = font.render("Blue player wins!", True, (255, 255, 255))
+            winner_text = pygame.image.load("./assets/Blue Player Wins.png")
         elif yellow_score > blue_score:
-            winner_text = font.render("Yellow player wins!", True, (255, 255, 255))
+            winner_text = pygame.image.load("./assets/Yellow Player Wins.png")
         else:
-            winner_text = font.render("It's a tie!", True, (255, 255, 255))
+            winner_text = pygame.image.load("./assets/Friendship.png")
 
-        screen.blit(winner_text, (width // 2 - 150, height // 2 - 50))
+        screen.blit(winner_text, (300, 0))
+        mixer.music.load("./assets/win.mp3")
+        mixer.music.play()
         pygame.display.flip()
         pygame.time.delay(5000)  # Отображаем результаты на 5 секунд перед завершением игры
         running = False
